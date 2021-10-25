@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Welcome to Firebase Hosting</title>
+
+    <!-- update the version number as needed -->
+    <script defer src="/__/firebase/8.6.8/firebase-app.js"></script>
+    <!-- include only the Firebase features as you need -->
+    <script defer src="/__/firebase/8.6.8/firebase-auth.js"></script>
+    <script defer src="/__/firebase/8.6.8/firebase-database.js"></script>
+    <script defer src="/__/firebase/8.6.8/firebase-firestore.js"></script>
+    <script defer src="/__/firebase/8.6.8/firebase-functions.js"></script>
+    <script defer src="/__/firebase/8.6.8/firebase-messaging.js"></script>
+    <script defer src="/__/firebase/8.6.8/firebase-storage.js"></script>
+    <script defer src="/__/firebase/8.6.8/firebase-analytics.js"></script>
+    <script defer src="/__/firebase/8.6.8/firebase-remote-config.js"></script>
+    <script defer src="/__/firebase/8.6.8/firebase-performance.js"></script>
+    <!--
+      initialize the SDK after all desired features are loaded, set useEmulator to false
+      to avoid connecting the SDK to running emulators.
+    -->
+    <script defer src="/__/firebase/init.js?useEmulator=true"></script>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
+
+    <script src="https://js.stripe.com/v3/" defer async></script>
+
+    <link rel="stylesheet" href="/style.css">
+
+  </head>
+
+  <body x-data="state()" x-init="selectPrompts()">
+
+    <div class="modal" x-bind:class="{ modal: true, 'is-active': isCartOpen }">
+      <div class="modal-background" @click.prevent="closeCart()"></div>
+      <div class="modal-content" @click="stop($event)">
+        <div class="box">
+          <h3 class="subtitle">Shopping cart</h3>
+          <form>
+            <template x-for="(item, i) of cartData.items">
+              <div class="cart-item">
+                <div class="columns">
+                  <div class="column" style="display: flex; align-items: center;">
+                    <a href="#" @click.prevent="editItem(item)"><span x-text="item.name"></span> - <span x-text="item.prompt"></span></a>
+                  </div>
+                  <div class="column">
+                    <div style="display: flex; align-items: center;">
+                      <label class="mr-2">Quantity:</label> <input type="number" class="input" style="width: auto" x-model="item.quantity" @change="updateCart()">
+                    </div>
+                  </div>
+                  <div class="column" style="display: flex; align-items: center; justify-content: flex-end">
+                    <div class="mr-2" x-text="`$${item.quantity * (item.includePhoto ? 20 : 15)}`"></div>
+                    <a href="#" @click.prevent="deleteFromCart(i)" style="display: flex; align-items: center;">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </template>
+            <div class="buttons mt-5">
+              <button class="button" x-show="cartData.items.length > 0" @click.prevent="purchase()">Purchase</button>
+              <button class="button" @click.prevent="createAnother()">Create another card</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <button class="modal-close is-large" aria-label="close" @click.prevent="closeCart()"></button>
+    </div>
+
+    <div class="container">
+
+      <div class="header">
+        <button class="button invisible">
+          <svg xmlns="http://www.w3.org/2000/svg" class="" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+          </svg>
+          Cart (<span x-text="cartData.items.length"></span>)
+        </button>
+        <a href="/index.html">
+          <img id="logo" src="/images/MLC_Icon.png" alt="Memory Lane Cards Icon">
+        </a>
+        <button class="button" @click.prevent="openCart()">
+          <svg xmlns="http://www.w3.org/2000/svg" class="" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+          </svg>
+          Cart (<span x-text="cartData.items.length"></span>)
+        </button>
+      </div>
+
+      <div class="columns">
+        <div class="column is-one-quarter">
+
+          <form id="customize-form" action="index3.html" method="post">
+
+            <section class="formtext">
+                
+              <h2 class="title is-4">Customize</h2>
+
+              <div class="field">
+                <label class="label">Older adult's name</label>
+                <div class="control">
+                  <input name="elderName" class="input" type="text" placeholder="Name" x-model="currentItem.name">
+                </div>
+              </div>
+
+              <div class="field">
+                <label class="label">Older adult's phone number</label>
+                <div class="control">
+                  <input name="elderName" class="input" type="text" placeholder="Name" x-model="currentItem.phone">
+                </div>
+              </div>
+  
+              <div class="field">
+                <div class="control">
+                  <label class="label">What fill-in-the-blank prompt level best fits the older adult completing the activity?</label>
+                  <div class="select">
+                    <select x-model="currentItem.prompt" @change="selectPrompts()">
+                      <option value="short">Short: Writing a word or two</option>
+                      <option value="medium">Medium: Writing a phrase or two</option>
+                      <option value="long">Long: Writing a sentence or two</option>
+                      <option value="mixed">Mixed: One of each</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div class="field uploader">
+
+                <div class="field" :style="currentItem.includePhoto ? '' : 'margin-bottom: 0;'">
+                  <div class="control">
+                    <label for="image-upload" class="checkbox">
+                      <input id="image-upload" type="checkbox" x-model="currentItem.includePhoto">
+                      Include an image? <strong>(add $5)</strong>
+                    </label>
+                  </div>
+                </div>
+
+                <template x-if="currentItem.includePhoto">
+
+                  <div>
+
+                    <div class="field">
+                      <div class="file has-name is-boxed is-primary">
+                        <label class="file-label">
+                          <div class="control">
+                            <input x-show="!currentItem.photo" id="image-input" type="file" name="resume" @change="handlePhoto($event)">
+                            <button x-show="currentItem.photo" class="button" @click.prevent="clearPhoto()">Reset photo</button>
+                          </div>
+                        </label>
+                      </div>
+                    </div>
+
+                  </div>
+
+                </template>
+              </div>
+
+
+              <div class="field">
+                <label class="label" for="gift-message">
+                  (Optional) Include a personalized gift message:</label>
+                <div class="control">
+                  <textarea class="textarea" name="gift-message" id="gift-message" placeholder="" x-model="currentItem.note"></textarea>
+                </div>
+              </div>
+
+            </section>
+
+        </div>
+
+        <div class="column is-three-quarters">
+
+          <h2 class="title is-4">Preview</h2>
+
+          <div>
+          <div id="preview-card">
+            <div id="preview-card-left">
+              <img x-show="currentItem.includePhoto && currentItem.photo" :src="currentItem.photo">
+            </div>
+            <div id="preview-card-right">
+              <div id="preview-card-date">
+                Date <div class="prompt"></div>
+              </div>
+              <div id="preview-card-greeting">
+                Dear <div class="prompt"></div>
+              </div>
+              <div id="preview-card-intro">
+                I've been thinking of you and thought you might enjoy a trip down memory lane...
+              </div>
+              <div id="preview-card-prompts">
+                <template x-for="prompt in currentItem.prompts">
+                  <label x-html="prompt.replace(/_/g, '<div class=prompt></div>')">
+                  </label>
+                </template>
+              </div>
+              <div id="preview-card-outro">
+                Let's talk soon,
+                <div class="prompt inline-prompt"></div>
+                <div><span x-text="currentItem.name"></span> <span x-show="currentItem.phone" x-text="`- ${currentItem.phone}`"></span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        </div>
+      </div>
+
+      <button x-show="!cartData.items.includes(currentItem)" class="button is-dark is-outlined add-to-cart" @click.prevent="addToCart()">Add to cart</button>
+      <button x-show="cartData.items.includes(currentItem)" class="button is-dark is-outlined add-to-cart" @click.prevent="addToCart()">Update and back to cart</button>
+
+    </form>
+
+  </div>
+
+  <footer>
+    <div class="container">
+      <p class="title is-4"><strong>Relive the past to make
+        memories last.</strong></p>
+      <a href="mailto:support@memorylanecardsllc.com">
+        support@memorylanecardsllc.com</a>
+    </div>
+  </footer>
+
+  <script type="module" src="/app.js"></script>
+  <script src="//unpkg.com/alpinejs" defer></script>
+</body>

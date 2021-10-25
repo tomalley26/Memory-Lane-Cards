@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Welcome to Firebase Hosting</title>
+
+    <!-- update the version number as needed -->
+    <script defer src="/__/firebase/8.6.8/firebase-app.js"></script>
+    <!-- include only the Firebase features as you need -->
+    <script defer src="/__/firebase/8.6.8/firebase-auth.js"></script>
+    <script defer src="/__/firebase/8.6.8/firebase-database.js"></script>
+    <script defer src="/__/firebase/8.6.8/firebase-firestore.js"></script>
+    <script defer src="/__/firebase/8.6.8/firebase-functions.js"></script>
+    <script defer src="/__/firebase/8.6.8/firebase-messaging.js"></script>
+    <script defer src="/__/firebase/8.6.8/firebase-storage.js"></script>
+    <script defer src="/__/firebase/8.6.8/firebase-analytics.js"></script>
+    <script defer src="/__/firebase/8.6.8/firebase-remote-config.js"></script>
+    <script defer src="/__/firebase/8.6.8/firebase-performance.js"></script>
+    <!--
+      initialize the SDK after all desired features are loaded, set useEmulator to false
+      to avoid connecting the SDK to running emulators.
+    -->
+    <script defer src="/__/firebase/init.js?useEmulator=true"></script>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
+
+    <link rel="stylesheet" href="/style.css">
+
+  </head>
+
+  <body>
+
+    <div class="container is-fluid">
+
+      <div class="index3">
+
+      <div class="header">
+        <a href="/index.html">
+
+        <img id="logo" src="/images/MLC_Icon.png" alt="Memory Lane Cards Icon">
+
+      </a>
+      </div>
+
+      <progress class="progress is-small" value="100" max="100">100%</progress>
+
+      <h2 class="title is-3">Success!</h2>
+
+
+          <img id="promo" src="images/success.jpeg" alt="Memory Lane Cards Promotional Photo">
+
+            <span> A confirmation email will be sent to you shortly with details
+              about your order and shipping.
+            </span>
+          <span id="success"><strong>Thank you for shopping with
+             Memory Lane Cards!</strong></span>
+
+  </div>
+
+  <a href="/index.html">
+  <div class="field is-grouped">
+    <div class="control">
+      <button class="button is-dark is-outlined">Make another card</button>
+    </div>
+  </a>
+
+</div>
+
+  </div>
+
+    <footer>
+      <div class="container is-fluid">
+        <p class="title is-4"><strong>Relive the past to make
+          memories last.</strong></p>
+        <a href="mailto:support@memorylanecardsllc.com">
+          support@memorylanecardsllc.com</a>
+      </div>
+    </footer>
+
+        <script>
+          localStorage.clear()
+        </script>
+  </body>
